@@ -1,0 +1,86 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MRI Nomogram – Neurological Recovery after Acute Cervical SCI</title>
+<style>
+:root{--b:#0b5c7a;--bg:#f4f7f9;--card:#fff;--t:#1d2a33;--m:#5b6b75;--ok:#1f8a4c;--mid:#c48a00;--bad:#b3261e}
+*{box-sizing:border-box}body{margin:0;font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--t);line-height:1.45}
+header{background:var(--b);color:#fff;padding:18px 16px}header h1{margin:0;font-size:1.25rem}header p{margin:4px 0 0;opacity:.85;font-size:.9rem}
+main{max-width:860px;margin:0 auto;padding:16px}.card{background:var(--card);border-radius:10px;box-shadow:0 1px 3px rgba(0,0,0,.08);padding:16px;margin-bottom:16px}
+h2{font-size:1.05rem;margin:0 0 10px;color:var(--b)}.field{margin-bottom:16px}label{font-weight:600;display:block}
+.def{font-size:.85rem;color:var(--m);margin:2px 0 6px}.row{display:flex;gap:10px;align-items:center}
+input[type=number]{width:110px;padding:8px;font-size:1rem;border:1px solid #b9c6ce;border-radius:6px}input[type=range]{flex:1}
+.seg{display:flex;gap:8px;flex-wrap:wrap}.seg label{font-weight:500;border:1px solid #b9c6ce;border-radius:6px;padding:8px 12px;cursor:pointer}
+.seg input{margin-right:6px}.pts{font-size:.85rem;color:var(--b);font-weight:600;min-width:70px;text-align:right}
+.res{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px}.big{font-size:2rem;font-weight:700}
+.bar{height:12px;background:#e3e9ed;border-radius:6px;overflow:hidden;margin-top:8px}.bar div{height:100%;transition:width .2s}
+.warn{color:var(--bad);font-size:.85rem}table{border-collapse:collapse;width:100%;font-size:.88rem}td,th{border-bottom:1px solid #e3e9ed;padding:6px;text-align:left}
+.small{font-size:.82rem;color:var(--m)}.disc{border-left:4px solid var(--mid);background:#fff8e6}
+details summary{cursor:pointer;font-weight:600;color:var(--b)}
+</style></head><body>
+<header><h1>MRI-Based Nomogram: Neurological Recovery after Acute Cervical Spinal Cord Injury</h1>
+<p>Predicted probability of &ge;1 ASIA Impairment Scale grade improvement at 6 months after surgery</p></header>
+<main>
+<div class="card"><h2>MRI predictors</h2>
+<div class="field"><label for="mscc">Maximum spinal cord compression (MSCC), %</label>
+<div class="def">MSCC = [1 &minus; a / ((b + c)/2)] &times; 100%, where a = narrowest cord diameter at the injury level, b and c = normal cord diameters above and below the injury level (sagittal MRI). Nomogram range 20&ndash;60%.</div>
+<div class="row"><input type="number" id="mscc" min="0" max="100" step="0.1" value="40"><input type="range" id="msccR" min="20" max="60" step="0.5" value="40"><span class="pts" id="pM"></span></div></div>
+<div class="field"><label>Intramedullary edema length (IEL)</label>
+<div class="def">Craniocaudal length of intramedullary T2 hyperintensity (edema) on T2-weighted sagittal images (3.0 T MRI, 2&ndash;3 days post-injury). Entered as a dichotomy at the 48 mm threshold.</div>
+<div class="row"><div class="seg"><label><input type="radio" name="iel" value="40" checked>&le; 48 mm</label><label><input type="radio" name="iel" value="60">&gt; 48 mm</label></div><span class="pts" id="pE" style="margin-left:auto"></span></div></div>
+<div class="field"><label for="ihl">Intramedullary hemorrhage length (IHL), mm</label>
+<div class="def">Craniocaudal length of intramedullary hemorrhage (T2 hypointensity) on T2-weighted sagittal images. Nomogram range 10&ndash;40 mm.</div>
+<div class="row"><input type="number" id="ihl" min="0" max="100" step="0.1" value="25"><input type="range" id="ihlR" min="10" max="40" step="0.5" value="25"><span class="pts" id="pH"></span></div></div>
+<div id="warn" class="warn"></div></div>
+<div class="card" aria-live="polite"><h2>Result</h2><div class="res">
+<div><div class="small">Total nomogram points</div><div class="big" id="tot"></div><div class="small">range 0&ndash;213.5</div></div>
+<div><div class="small">Predicted probability of recovery</div><div class="big" id="prob"></div><div class="bar"><div id="barf"></div></div></div></div>
+<p id="interp"></p></div>
+<div class="card"><h2>How the score is calculated</h2>
+<table><tr><th>Predictor</th><th>Points (read from Fig. 4 nomogram)</th></tr>
+<tr><td>MSCC (%)</td><td>(60 &minus; MSCC) &times; 1.988 &nbsp;(60% = 0, 20% = 79.5)</td></tr>
+<tr><td>IEL</td><td>&le; 48 mm = 33.2; &gt; 48 mm = 0</td></tr>
+<tr><td>IHL (mm)</td><td>(40 &minus; IHL) &times; 3.361 &nbsp;(40 mm = 0, 10 mm = 100.8)</td></tr>
+<tr><td>Probability</td><td>P = 1 / (1 + e<sup>&minus;(0.12591 &times; Total &minus; 14.559)</sup>) &nbsp;(P = 0.5 at ~115.6 points)</td></tr></table>
+<p class="small">The authors did not publish the regression intercept or a points formula. Point weights and the points-to-probability conversion were digitised from the published nomogram (Fig. 4); the logistic fit reproduces the printed probability ticks (0.01&ndash;0.99) to within &plusmn;0.05 logit. Values are therefore approximate.</p>
+<details><summary>Reported model performance and source statistics</summary>
+<ul class="small"><li>Cohort: 103 surgically treated acute traumatic CSCI patients (single centre, Yangzhou, China); recovery in 73 (70.9%). Modelling n = 75, internal validation n = 28.</li>
+<li>C-index / AUC: 0.969 (95% CI 0.937&ndash;1.000) modelling; 0.936 (0.847&ndash;1.000) validation. Calibration by 1000 bootstrap resamples (mean absolute error 0.038).</li>
+<li>Multivariable ORs with IEL dichotomised (Table 5): IEL &gt;48 mm OR 0.01 (0.001&ndash;0.137); IHL OR 0.712 per mm (0.594&ndash;0.854); MSCC OR 0.850 per % (0.739&ndash;0.979).</li>
+<li>Single-parameter ROC cut-offs: IEL 48.5 mm, IHL 21.5 mm, MSCC 43.5%.</li></ul></details></div>
+<div class="card disc"><h2>Disclaimer</h2><p class="small">For research and educational use only. This tool is an unofficial re-implementation of a published, internally validated (not externally validated) single-centre model and is not a medical device. It does not replace clinical judgement, specialist assessment, or shared decision-making. Results outside the derivation population (surgically treated acute traumatic cervical SCI, ASIA A&ndash;C/D at baseline, MRI 2&ndash;3 days post-injury at 3.0 T) may not be valid.</p></div>
+<div class="card"><h2>Reference</h2><p class="small">Hossain M, Hao S, Yeasin A, Wang Y. Development and validation of an MRI-based nomogram for predicting neurological recovery after acute cervical spinal cord injury. <i>Spinal Cord</i>. 2026;64:563&ndash;570. doi:10.1038/s41393-026-01210-4. Published online 29 April 2026.</p></div>
+</main>
+<script>
+// Model digitised from Fig. 4 nomogram (Hossain et al., Spinal Cord 2026;64:563-570)
+var SCIModel=(function(){
+  var M={B_MSCC:1.988,B_IHL:3.361,IEL_LE48:33.2,SLOPE:0.12591,INT:-14.5593};
+  function clamp(v,lo,hi){return Math.min(hi,Math.max(lo,v));}
+  function score(mscc,iel,ihl){
+    var w=[];
+    if(mscc<20||mscc>60)w.push('MSCC outside nomogram range (20–60%); value clamped.');
+    if(ihl<10||ihl>40)w.push('IHL outside nomogram range (10–40 mm); value clamped.');
+    var pM=(60-clamp(mscc,20,60))*M.B_MSCC, pE=iel<=48?M.IEL_LE48:0, pH=(40-clamp(ihl,10,40))*M.B_IHL;
+    var t=pM+pE+pH, lp=M.INT+M.SLOPE*t, p=1/(1+Math.exp(-lp));
+    return {pM:pM,pE:pE,pH:pH,total:t,prob:p,warnings:w};
+  }
+  return {score:score,M:M};
+})();
+if(typeof module!=='undefined')module.exports=SCIModel;
+
+(function(){
+var $=function(i){return document.getElementById(i)};
+function link(n,r){$(n).addEventListener('input',function(){$(r).value=$(n).value;upd()});$(r).addEventListener('input',function(){$(n).value=$(r).value;upd()});}
+link('mscc','msccR');link('ihl','ihlR');
+document.querySelectorAll('input[name=iel]').forEach(function(e){e.addEventListener('change',upd)});
+function upd(){
+ var m=parseFloat($('mscc').value),h=parseFloat($('ihl').value),e=parseFloat(document.querySelector('input[name=iel]:checked').value);
+ if(isNaN(m)||isNaN(h)){$('warn').textContent='Please enter numeric values.';return;}
+ var r=SCIModel.score(m,e,h);
+ $('pM').textContent=r.pM.toFixed(1)+' pts';$('pE').textContent=r.pE.toFixed(1)+' pts';$('pH').textContent=r.pH.toFixed(1)+' pts';
+ $('tot').textContent=r.total.toFixed(1);var pc=r.prob*100;
+ $('prob').textContent=(pc<1?'<1':pc>99?'>99':pc.toFixed(0))+'%';
+ var col=r.prob>=0.7?'var(--ok)':r.prob>=0.3?'var(--mid)':'var(--bad)';$('prob').style.color=col;$('barf').style.width=pc+'%';$('barf').style.background=col;
+ $('warn').innerHTML=r.warnings.join('<br>');
+ $('interp').textContent='Based on the nomogram, the estimated probability of improving by at least one ASIA Impairment Scale grade at 6 months after surgical treatment is approximately '+(pc<1?'<1':pc>99?'>99':pc.toFixed(0))+'%. '+(r.prob>=0.7?'This is a relatively favourable imaging profile.':r.prob>=0.3?'This is an intermediate imaging profile.':'This is an unfavourable imaging profile.')+' The paper did not define risk categories; the colour bands (<30%, 30–70%, ≥70%) are display aids only. Overall recovery rate in the study cohort was 70.9%.';
+}
+upd();})();
+</script></body></html>
